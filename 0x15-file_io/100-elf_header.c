@@ -36,6 +36,26 @@ void check_elf(unsigned char *e_ident)
 }
 
 
+void print_class(unsigned char *e_ident)
+{
+	printf("  Class:                             ");
+
+	switch (e_ident[EI_CLASS])
+	{
+	case ELFCLASSNONE:
+		printf("none\n");
+		break;
+	case ELFCLASS32:
+		printf("ELF32\n");
+		break;
+	case ELFCLASS64:
+		printf("ELF64\n");
+		break;
+	default:
+		printf("<unknown: %x>\n", e_ident[EI_CLASS]);
+	}
+}
+
 void print_magic(unsigned char *e_ident)
 {
 	int index;
@@ -54,23 +74,32 @@ void print_magic(unsigned char *e_ident)
 }
 
 
-void print_class(unsigned char *e_ident)
+void print_type(unsigned int e_type, unsigned char *e_ident)
 {
-	printf("  Class:                             ");
+	if (e_ident[EI_DATA] == ELFDATA2MSB)
+		e_type >>= 8;
 
-	switch (e_ident[EI_CLASS])
+	printf("  Type:                              ");
+
+	switch (e_type)
 	{
-	case ELFCLASSNONE:
-		printf("none\n");
+	case ET_NONE:
+		printf("NONE (None)\n");
 		break;
-	case ELFCLASS32:
-		printf("ELF32\n");
+	case ET_REL:
+		printf("REL (Relocatable file)\n");
 		break;
-	case ELFCLASS64:
-		printf("ELF64\n");
+	case ET_EXEC:
+		printf("EXEC (Executable file)\n");
+		break;
+	case ET_DYN:
+		printf("DYN (Shared object file)\n");
+		break;
+	case ET_CORE:
+		printf("CORE (Core file)\n");
 		break;
 	default:
-		printf("<unknown: %x>\n", e_ident[EI_CLASS]);
+		printf("<unknown: %x>\n", e_type);
 	}
 }
 
@@ -161,35 +190,6 @@ void print_abi(unsigned char *e_ident)
 	       e_ident[EI_ABIVERSION]);
 }
 
-
-void print_type(unsigned int e_type, unsigned char *e_ident)
-{
-	if (e_ident[EI_DATA] == ELFDATA2MSB)
-		e_type >>= 8;
-
-	printf("  Type:                              ");
-
-	switch (e_type)
-	{
-	case ET_NONE:
-		printf("NONE (None)\n");
-		break;
-	case ET_REL:
-		printf("REL (Relocatable file)\n");
-		break;
-	case ET_EXEC:
-		printf("EXEC (Executable file)\n");
-		break;
-	case ET_DYN:
-		printf("DYN (Shared object file)\n");
-		break;
-	case ET_CORE:
-		printf("CORE (Core file)\n");
-		break;
-	default:
-		printf("<unknown: %x>\n", e_type);
-	}
-}
 
 
 void print_entry(unsigned long int e_entry, unsigned char *e_ident)
