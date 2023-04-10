@@ -7,7 +7,8 @@
  * @max_chars: The maximum number of characters the function should read and print.
  *
  * Return: If the function fails or filename is NULL - 0.
- *         O/w - the actual number of bytes the function can read and print.
+ * O/w - the actual number of bytes the function can read and print.
+ * 
  */
 ssize_t read_textfile(const char *filename, size_t max_chars)
 {
