@@ -62,32 +62,42 @@ int main(int argc, char *argv[])
 	char *buffer;
 
 	if (argc != 3)
-{
-	dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
-	exit(97);
-}
+	{
+		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
+		exit(97);
+	}
 
-from = open(argv[1], O_RDONLY);
-if (from == -1)
-	print_error("Can't read from file", argv[1], 98);
+	buffer = create_buffer(argv[2]);
+	from = open(argv[1], O_RDONLY);
+	r = read(from, buffer, 1024);
+	to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
 
-to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
-if (to == -1)
-	print_error("Can't write to file", argv[2], 99);
+	do {
+		if (from == -1 || r == -1)
+		{
+			dprintf(STDERR_FILENO,
+				"Error: Can't read from file %s\n", argv[1]);
+			free(buffer);
+			exit(98);
+		}
 
-while ((r = read(from, buffer, BUFFER_SIZE)) > 0)
-{
-	w = write(to, buffer, r);
-	if (w != r)
-		print_error("Can't write to file", argv[2], 99);
-}
+		w = write(to, buffer, r);
+		if (to == -1 || w == -1)
+		{
+			dprintf(STDERR_FILENO,
+				"Error: Can't write to %s\n", argv[2]);
+			free(buffer);
+			exit(99);
+		}
 
-if (r == -1)
-	print_error("Can't read from file", argv[1], 98);
+		r = read(from, buffer, 1024);
+		to = open(argv[2], O_WRONLY | O_APPEND);
 
-close_file(from);
-close_file(to);
+	} while (r > 0);
 
-return (0);
+	free(buffer);
+	close_file(from);
+	close_file(to);
 
+	return (0);
 }

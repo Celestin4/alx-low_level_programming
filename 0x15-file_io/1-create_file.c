@@ -8,26 +8,26 @@
  * Return: If the function fails - -1.
  *         Otherwise - 1.
  */
-int create_file(const char *new_filename, char *new_text_content)
+int create_file(const char *filename, char *text_content)
 {
-    int fd, w, len = 0;
+	int o, w, len = 0;
 
-    if (new_filename == NULL)
-        return (-1);
+	if (filename == NULL)
+		return (-1);
 
-    if (new_text_content != NULL)
-    {
-        for (len = 0; new_text_content[len];)
-            len++;
-    }
+	if (text_content != NULL)
+	{
+		for (len = 0; text_content[len];)
+			len++;
+	}
 
-    fd = open(new_filename, O_CREAT | O_RDWR | O_TRUNC, 0600);
-    w = write(fd, new_text_content, len);
+	o = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0600);
+	w = write(o, text_content, len);
 
-    if (fd == -1 || w == -1)
-        return (-1);
+	if (o == -1 || w == -1)
+		return (-1);
 
-    close(fd);
+	close(o);
 
-    return (1);
+	return (1);
 }
