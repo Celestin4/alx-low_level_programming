@@ -4,45 +4,36 @@
 /**
  * read_textfile - Reads a text file and prints it to POSIX stdout.
  * @filename: A pointer to the name of the file.
- * @max_chars: The maximum number of characters the function should read and print.
+ * @max_bytes: The maximum number of bytes that the
+ *           function should read and print.
  *
  * Return: If the function fails or filename is NULL - 0.
- * O/w - the actual number of bytes the function can read and print.
- * 
+ *         Otherwise - the actual number of bytes read and printed.
  */
-ssize_t read_textfile(const char *filename, size_t max_chars)
+ssize_t read_textfile(const char *filename, size_t max_bytes)
 {
-    ssize_t fd, chars_read, chars_written;
-    char *buffer;
+	ssize_t file_desc, read_bytes, written_bytes;
+	char *buffer;
 
-    if (filename == NULL)
-        return 0;
+	if (filename == NULL)
+		return (0);
 
-    buffer = malloc(sizeof(char) * max_chars);
-    if (buffer == NULL)
-        return 0;
+	buffer = malloc(sizeof(char) * max_bytes);
+	if (buffer == NULL)
+		return (0);
 
-    fd = open(filename, O_RDONLY);
-    if (fd == -1) {
-        free(buffer);
-        return 0;
-    }
+	file_desc = open(filename, O_RDONLY);
+	read_bytes = read(file_desc, buffer, max_bytes);
+	written_bytes = write(STDOUT_FILENO, buffer, read_bytes);
 
-    chars_read = read(fd, buffer, max_chars);
-    if (chars_read == -1) {
-        free(buffer);
-        close(fd);
-        return 0;
-    }
+	if (file_desc == -1 || read_bytes == -1 || written_bytes == -1 || written_bytes != read_bytes)
+	{
+		free(buffer);
+		return (0);
+	}
 
-    chars_written = write(STDOUT_FILENO, buffer, chars_read);
-    if (chars_written == -1 || chars_written != chars_read) {
-        free(buffer);
-        close(fd);
-        return 0;
-    }
+	free(buffer);
+	close(file_desc);
 
-    free(buffer);
-    close(fd);
-    return chars_written;
+	return (written_bytes);
 }
