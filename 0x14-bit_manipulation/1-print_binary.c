@@ -2,30 +2,26 @@
 #include <stdio.h>
 
 /**
- * print_binary - prints binary representation of a number
- * @num: decimal number to convert to binary and print
+ * print_binary - print binary representation of a number
+ * @n: decimal number to print as binary
  */
-void print_binary(unsigned long int num)
+void print_binary(unsigned long int n)
 {
 	unsigned long int temp;
-	int bit_count = 0;
+	int shifts;
 
-	if (num == 0)
+	if (n == 0)
 	{
 		printf("0");
 		return;
 	}
 
-	// Count the number of bits in the input number
-	for (temp = num; temp > 0; temp >>= 1)
-	{
-		bit_count++;
-	}
+	for (temp = n, shifts = 0; (temp >>= 1) > 0; shifts++)
+		;
 
-	// Print the binary representation of the number, starting from the highest bit
-	for (int i = bit_count - 1; i >= 0; i--)
+	for (; shifts >= 0; shifts--)
 	{
-		if ((num >> i) & 1)
+		if ((n >> shifts) & 1)
 			printf("1");
 		else
 			printf("0");
